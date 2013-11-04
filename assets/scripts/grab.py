@@ -24,7 +24,9 @@
 # but the basic idea is there
 # Usage requires ray and mouse sensors, ray should be pulsed and freq 0
 
+import math
 from bge import logic
+from mathutils import Matrix, Vector
 
 class GNTCore:
 	def __init__(self, object):
@@ -82,39 +84,20 @@ class GNTCore:
 			self.initGrab()
 
 	def initGrab(self):
-		if self.raySen.positive:
+		if self.raySen.positive and self.mouseSen.positive:
 			#  don't grab massless objects... those are STATIC
 			if self.raySen.hitObject.mass > 0:
 				self.target = self.raySen.hitObject
-				self.prevRayDir = self.raySen.rayDirection
-				self.prevRayRange = self.raySen.range
-				self.prevPlayerPos = self.own.worldPosition.copy()
 				self.grabbed = True
+				self.localHitPos = self.target.worldPosition - Vector(self.raySen.hitPosition)
+				self.distance = (self.own.worldPosition - Vector(self.raySen.hitPosition)).length
+				# suspend the dynamics during the translations
+				self.target.suspendDynamics()
 
 	def mainGrabbed(self):
 		if self.mouseSen.positive and self.raySen.hitObject == self.target:
-			self.rayDir = self.raySen.rayDirection
-			self.rayRange = self.raySen.range
-
-			# suspend the dynamics during the translations
-			self.target.suspendDynamics()
-
-			# grabbing
-			a = [x * self.prevRayRange for x in self.prevRayDir]
-			b = [x * self.rayRange for x in self.rayDir]
-			diff = [(a - b) for a, b in zip(a, b)]
-
-			# diff from player translation, makes follow walk
-			tDiff = [(a - b) for a, b in zip(self.prevPlayerPos, self.own.worldPosition)]
-
-			# new position
-			oldWorldPos = self.target.worldPosition
-			newWorldPos = [a - b - c for a, b, c in zip(oldWorldPos, diff, tDiff)]
-			self.target.worldPosition = newWorldPos
-
-			self.prevRayDir = self.rayDir
-			self.prevRayRange = self.rayRange
-			self.prevPlayerPos = self.own.worldPosition.copy()
+			hitRay = Vector([x * self.distance for x in self.raySen.rayDirection])
+			self.target.worldPosition = self.own.worldPosition.copy() + hitRay + self.localHitPos
 		else:
 			self.prevRayDir = None
 			self.prevRayRange = None
