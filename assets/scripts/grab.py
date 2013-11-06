@@ -106,7 +106,7 @@ class GNTCore:
 	def mainGrabbed(self):
 		if self.rightButtonSen != None and self.rightButtonSen.positive:
 			self.target.restoreDynamics()
-			self.target.applyForce(Vector([x * 10000 for x in self.raySen.rayDirection]))
+			self.target.applyForce(Vector([x * 2500 for x in self.raySen.rayDirection]))
 			self.grabbed = False
 			if self.target != None:
 				self.target.restoreDynamics()
