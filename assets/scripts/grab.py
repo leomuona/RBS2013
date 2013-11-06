@@ -114,7 +114,7 @@ class GNTCore:
 			self.thrown = True
 			self.throwTime = current_milli_time()
 
-		elif self.leftButtonSen.positive and self.raySen.hitObject == self.target:
+		elif self.leftButtonSen.positive and self.target != None:
 			hitRay = Vector([x * self.distance for x in self.raySen.rayDirection])
 			self.target.worldPosition = self.own.worldPosition.copy() + hitRay + self.localHitPos
 
