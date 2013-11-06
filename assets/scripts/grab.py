@@ -24,9 +24,11 @@
 # but the basic idea is there
 # Usage requires ray and mouse sensors, ray should be pulsed and freq 0
 
-import math
+import math, time
 from bge import logic
 from mathutils import Matrix, Vector
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 class GNTCore:
 	def __init__(self, object):
@@ -34,22 +36,21 @@ class GNTCore:
 		self.cont = None
 		self.hits = 0
 
-		# prev ray dir and range, used for calculating forces.
-		# also player movement is followed like this.
-		self.prevRayDir = None
-		self.prevRayRange = None
-		self.prevPlayerPos = None
 		self.target = None
 
 		if isCont(object):
 			self.cont = object
 			self.own = object.owner
 
-		# have we grabbed some object
+		# have we grabbed/thrown some object
 		self.grabbed = False
+		self.thrown = False
+		self.throwTime = 0.0
+		self.throwTimeout = 200 # ms
 
 		self.raySen = None
-		self.mouseSen = None
+		self.leftButtonSen = None
+		self.rightButtonSen = None
 
 		objects = [self.own]
 
@@ -58,12 +59,17 @@ class GNTCore:
 				if str(s.__class__) == "<class 'KX_RaySensor'>":
 					self.raySen = s
 				elif str(s.__class__) == "<class 'SCA_MouseSensor'>":
-					self.mouseSen = s
+					if s.mode == 1: # KX_MOUSESENSORMODE_LEFTBUTTON
+						self.leftButtonSen = s
+					elif s.mode == 3: # KX_MOUSESENSORMODE_RIGHTBUTTON
+						self.rightButtonSen = s
 
 		if self.raySen == None:
 			print("ERROR: No RaySensor set")
-		if self.mouseSen == None:
-			print("ERROR: No MouseSensor set")
+		if self.leftButtonSen == None:
+			print("ERROR: No left mouse button sensor set")
+		if self.rightButtonSen == None:
+			print("ERROR: No right mouse button sensor set")
 
 		# setup sensor:
 		if self.raySen != None:
@@ -75,16 +81,19 @@ class GNTCore:
 		self.main()
 
 	def main(self):
-		if self.raySen == None or self.mouseSen == None:
+		if self.raySen == None or self.leftButtonSen == None:
 			return
 
-		if self.grabbed:
+		if self.thrown:
+			if (current_milli_time() - self.throwTime) > self.throwTimeout:
+				self.thrown = False
+		elif self.grabbed:
 			self.mainGrabbed()
 		else:
 			self.initGrab()
 
 	def initGrab(self):
-		if self.raySen.positive and self.mouseSen.positive:
+		if self.raySen.positive and self.leftButtonSen.positive:
 			#  don't grab massless objects... those are STATIC
 			if self.raySen.hitObject.mass > 0:
 				self.target = self.raySen.hitObject
@@ -95,13 +104,21 @@ class GNTCore:
 				self.target.suspendDynamics()
 
 	def mainGrabbed(self):
-		if self.mouseSen.positive and self.raySen.hitObject == self.target:
+		if self.rightButtonSen != None and self.rightButtonSen.positive:
+			self.target.restoreDynamics()
+			self.target.applyForce(Vector([x * 10000 for x in self.raySen.rayDirection]))
+			self.grabbed = False
+			if self.target != None:
+				self.target.restoreDynamics()
+			self.target = None
+			self.thrown = True
+			self.throwTime = current_milli_time()
+
+		elif self.leftButtonSen.positive and self.raySen.hitObject == self.target:
 			hitRay = Vector([x * self.distance for x in self.raySen.rayDirection])
 			self.target.worldPosition = self.own.worldPosition.copy() + hitRay + self.localHitPos
+
 		else:
-			self.prevRayDir = None
-			self.prevRayRange = None
-			self.prevPlayerPos = None
 			self.grabbed = False
 			if self.target != None:
 				self.target.restoreDynamics()
