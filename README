@@ -1,10 +1,23 @@
-Assignments:
-	-Pin model (Animal)
-	-Bowl throwing (Pantsu)
-	-Bowling hall model (Pantsu)
-	-Pin logic (Morbeus)
-	-Round logic (Asentaja)
+Installation and running:
 
-Metrics:
-	1 Blender Unit = 1 meter
-	or with weights, 1 blender unit = 1 kg
+  Just execute the given exe, no installation is needed.
+
+
+Movement and keys:
+
+  Keys are:
+
+    WASD for movement
+    hold left shift to run
+    space to jump
+    look around with mouse
+
+  You can grab objects by pointing on them and holding your left mouse button.
+  While holding, you can throw the grabbed object with mouse right-click.
+
+  Use this information to start bowling!
+
+
+How to bowl:
+
+  Grab the ball, aim at the pins, and throw it! Awesome, right! r-right?!
