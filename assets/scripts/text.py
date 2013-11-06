@@ -61,8 +61,8 @@ def write():
 
 	# BLF drawing routine
 	font_id = logic.font_id
-	blf.position(font_id, (width * 0.1), (height * 0.1), 0)
-	blf.size(font_id, 16, 72)
+	blf.position(font_id, (width * 0.25), (height * 0.5), 0)
+	blf.size(font_id, 24, 72)
 	blf.draw(font_id, text)
 
 
