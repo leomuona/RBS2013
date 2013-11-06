@@ -113,6 +113,7 @@ class GNTCore:
 			self.target = None
 			self.thrown = True
 			self.throwTime = current_milli_time()
+			logic.text_buffer.append({'text':'Aww yis!', 'timeout':750})
 
 		elif self.leftButtonSen.positive and self.target != None:
 			hitRay = Vector([x * self.distance for x in self.raySen.rayDirection])
