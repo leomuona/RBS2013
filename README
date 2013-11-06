@@ -11,6 +11,8 @@ Movement and keys:
     hold left shift to run
     space to jump
     look around with mouse
+    'r' to restart the game
+    'pause' to pause/resume game
 
   You can grab objects by pointing on them and holding your left mouse button.
   While holding, you can throw the grabbed object with mouse right-click.
