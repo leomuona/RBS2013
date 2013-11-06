@@ -95,7 +95,7 @@ class GNTCore:
 				self.target.suspendDynamics()
 
 	def mainGrabbed(self):
-		if self.mouseSen.positive and self.raySen.hitObject == self.target:
+		if self.mouseSen.positive:
 			hitRay = Vector([x * self.distance for x in self.raySen.rayDirection])
 			self.target.worldPosition = self.own.worldPosition.copy() + hitRay + self.localHitPos
 		else:
