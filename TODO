@@ -3,7 +3,6 @@
 -Score system: Get points from pins, lose points for being on track, get points from flying
 -Grabbed objects don't handle collisions
 -Linux version: check what libraries are needed, add instructions to install them
--There should be only 10 pins
 -Loop the music, add sound effects
 -Textures, finish bowling hall model, etc.
 -Cannot alt tab
