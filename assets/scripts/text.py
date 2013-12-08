@@ -22,6 +22,20 @@ def init():
 
 	logic.text_buffer = []
 
+def show_das_points():
+	''' expects that opengl mode is setup corrently '''
+	width = render.getWindowWidth()
+	height = render.getWindowHeight()
+
+	text = 'Points: '+str(logic.getCurrentScene().objects["PinsRoof"]["points"])
+
+	# BLF drawing routine
+	font_id = logic.font_id
+	#blf.position(font_id, width - 160, height - 24, 0) 
+	blf.position(font_id, width * 0.2, height * 0.2, 0)
+	blf.size(font_id, 24, 72)
+	blf.draw(font_id, text)
+
 def write():
 	''' Uses text buffer for rendering stuff on screen
 	
@@ -29,6 +43,19 @@ def write():
 	Each value in buffer is a hash, containing text, timeout and start_time
 	start time is set by me, not you
 	'''
+
+	"""write on screen"""
+	width = render.getWindowWidth()
+	height = render.getWindowHeight()
+
+	# OpenGL setup
+	bgl.glMatrixMode(bgl.GL_PROJECTION)
+	bgl.glLoadIdentity()
+	bgl.gluOrtho2D(0, width, 0, height)
+	bgl.glMatrixMode(bgl.GL_MODELVIEW)
+	bgl.glLoadIdentity()
+
+	show_das_points()
 
 	if logic.text_buffer == None or len(logic.text_buffer) == 0:
 		return
@@ -47,24 +74,12 @@ def write():
 	else:
 		logic.text_buffer[0]['start_time'] = current_milli_time()
 		text = logic.text_buffer[0]['text']
-	
-	"""write on screen"""
-	width = render.getWindowWidth()
-	height = render.getWindowHeight()
-
-	# OpenGL setup
-	bgl.glMatrixMode(bgl.GL_PROJECTION)
-	bgl.glLoadIdentity()
-	bgl.gluOrtho2D(0, width, 0, height)
-	bgl.glMatrixMode(bgl.GL_MODELVIEW)
-	bgl.glLoadIdentity()
 
 	# BLF drawing routine
 	font_id = logic.font_id
 	blf.position(font_id, (width * 0.25), (height * 0.5), 0)
 	blf.size(font_id, 24, 72)
 	blf.draw(font_id, text)
-
 
 init()
 
